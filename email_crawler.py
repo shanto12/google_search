@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+import logging
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -12,6 +13,22 @@ import concurrent.futures
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
+
+# Set up logging
+log_filename = f"logs/email_crawler_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+# File handler for logging to file
+file_handler = logging.FileHandler(log_filename)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+
+# Create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(file_handler)
 
 
 @dataclass
@@ -51,9 +68,11 @@ class EmailCrawler:
             response = requests.get(url, headers=headers, timeout=10)
             response.raise_for_status()
             self.sites_visited += 1
+            logger.info(f"Successfully fetched content from: {url}")
             return response.text, True
         except Exception as e:
             error_msg = f"Error fetching {url}: {str(e)}"
+            logger.error(error_msg)
             if self.debug_mode and url in self.debug_info:
                 self.debug_info[url].errors.append(error_msg)
             return "", False
@@ -76,6 +95,7 @@ class EmailCrawler:
 
     def crawl_page(self, url: str) -> None:
         """Crawl a single page and its contact pages for email addresses."""
+        logger.info(f"Starting crawl for: {url}")
         if self.debug_mode:
             self.debug_info[url] = PageDebugInfo(url=url)
 
@@ -91,11 +111,14 @@ class EmailCrawler:
 
         if emails:
             self.found_emails[url] = emails
+            print(f"Found {len(emails)} emails on {url}")
+            logger.info(f"Found {len(emails)} emails on {url}")
             if self.debug_mode:
                 self.debug_info[url].emails_found.update(emails)
 
-        # Find and crawl contact pages
         contact_pages = self.find_contact_pages(soup, url)
+        print(f"Found {len(contact_pages)} contact pages on {url}")
+        logger.info(f"Found {len(contact_pages)} contact pages on {url}")
         if self.debug_mode:
             self.debug_info[url].contact_pages_found = contact_pages
 
@@ -109,6 +132,8 @@ class EmailCrawler:
                     contact_emails = self.extract_emails(contact_content)
                     if contact_emails:
                         self.found_emails[contact_url] = contact_emails
+                        print(f"Found {len(contact_emails)} emails on contact page: {contact_url}")
+                        logger.info(f"Found {len(contact_emails)} emails on contact page: {contact_url}")
                         if self.debug_mode:
                             self.debug_info[url].emails_found.update(contact_emails)
 
@@ -121,6 +146,8 @@ class EmailCrawler:
             for i in range(num_pages):
                 self.google_pages_crawled += 1
                 start_index = i * 10 + 1
+                print(f"Searching Google page {i + 1}")
+                logger.info(f"Searching Google page {i + 1}")
                 result = service.cse().list(
                     q=query,
                     cx=self.cse_id,
@@ -134,19 +161,24 @@ class EmailCrawler:
 
             return urls
         except HttpError as e:
-            print(f"Error performing Google search: {str(e)}")
+            error_msg = f"Error performing Google search: {str(e)}"
+            print(error_msg)
+            logger.error(error_msg)
             return []
 
     def search_and_crawl(self, query: str, num_pages: int) -> Dict[str, Set[str]]:
         """Main method to search Google and crawl results for emails."""
         print(f"Searching for: {query}")
+        logger.info(f"Starting search for query: {query}")
         urls = self.google_search(query, num_pages)
 
         if not urls:
             print("No URLs found in search results")
+            logger.warning("No URLs found in search results")
             return {}
 
         print(f"Found {len(urls)} URLs to crawl")
+        logger.info(f"Found {len(urls)} URLs to crawl")
 
         # Use ThreadPoolExecutor for parallel crawling
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
@@ -154,28 +186,28 @@ class EmailCrawler:
 
         return self.found_emails
 
-    def print_debug_info(self):
-        """Print detailed debug information for each crawled page."""
-        print("\n=== DEBUG INFORMATION ===")
+    def log_debug_info(self):
+        """Log detailed debug information."""
+        logger.info("\n=== DEBUG INFORMATION ===")
         for url, info in self.debug_info.items():
-            print(f"\nPage: {url}")
-            print(f"Timestamp: {info.timestamp}")
-            print(f"Main page successfully crawled: {info.main_page_crawled}")
-            print(f"Emails found: {len(info.emails_found)}")
+            logger.info(f"\nPage: {url}")
+            logger.info(f"Timestamp: {info.timestamp}")
+            logger.info(f"Main page successfully crawled: {info.main_page_crawled}")
+            logger.info(f"Emails found: {len(info.emails_found)}")
             if info.emails_found:
-                print(f"  - {', '.join(sorted(info.emails_found))}")
+                logger.info(f"  - {', '.join(sorted(info.emails_found))}")
 
-            print(f"Contact pages found: {len(info.contact_pages_found)}")
+            logger.info(f"Contact pages found: {len(info.contact_pages_found)}")
             if info.contact_pages_found:
                 for contact_url in info.contact_pages_found:
                     status = info.contact_pages_crawled.get(contact_url, "Not crawled")
-                    print(f"  - {contact_url} (Crawled: {status})")
+                    logger.info(f"  - {contact_url} (Crawled: {status})")
 
             if info.errors:
-                print("Errors encountered:")
+                logger.info("Errors encountered:")
                 for error in info.errors:
-                    print(f"  - {error}")
-            print("-" * 80)
+                    logger.info(f"  - {error}")
+            logger.info("-" * 80)
 
     def print_summary(self):
         """Print summary statistics of the crawl."""
@@ -183,26 +215,33 @@ class EmailCrawler:
         for emails in self.found_emails.values():
             total_emails.update(emails)
 
-        print("\n=== CRAWL SUMMARY ===")
-        print(f"Google pages crawled: {self.google_pages_crawled}")
-        print(f"Total sites visited: {self.sites_visited}")
-        print(f"Sites with emails found: {len(self.found_emails)}")
-        print(f"Total unique emails found: {len(total_emails)}")
+        summary = [
+            "\n=== CRAWL SUMMARY ===",
+            f"Google pages crawled: {self.google_pages_crawled}",
+            f"Total sites visited: {self.sites_visited}",
+            f"Sites with emails found: {len(self.found_emails)}",
+            f"Total unique emails found: {len(total_emails)}",
+            "\nAll unique emails:",
+            ", ".join(sorted(total_emails))
+        ]
 
-        print("\nAll unique emails:")
-        print(", ".join(sorted(total_emails)))
+        # Print to console
+        print("\n".join(summary))
+
+        # Log to file
+        logger.info("\n".join(summary))
 
 
 def main():
     try:
-        # Get user inputs with defaults
         query = input("Enter your search query: ")
         pages_input = input("Enter number of pages to crawl [default=2]: ").strip()
         debug_input = input("Enable debug mode? (True/False) [default=False]: ").strip().lower()
 
-        # Process inputs with defaults
         num_pages = int(pages_input) if pages_input else 2
         debug_mode = debug_input in ('true', 't', 'yes', 'y', '1')
+
+        logger.info(f"Starting crawler with query: {query}, pages: {num_pages}, debug: {debug_mode}")
 
         crawler = EmailCrawler(debug_mode=debug_mode)
         results = crawler.search_and_crawl(query, num_pages)
@@ -210,18 +249,23 @@ def main():
         if results:
             print("\nFound email addresses:")
             for i, (url, emails) in enumerate(results.items(), 1):
-                print(f"\n{i}. URL: {url}")
-                print(f"   Emails: {', '.join(emails)}")
+                result_line = f"\n{i}. URL: {url}\n   Emails: {', '.join(emails)}"
+                print(result_line)
+                logger.info(result_line)
 
             crawler.print_summary()
 
             if debug_mode:
-                crawler.print_debug_info()
+                crawler.log_debug_info()
+                print(f"\nDetailed debug information has been saved to: {log_filename}")
         else:
             print("No email addresses found.")
+            logger.warning("No email addresses found.")
 
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        error_msg = f"An error occurred: {str(e)}"
+        print(error_msg)
+        logger.error(error_msg)
 
 
 if __name__ == "__main__":
