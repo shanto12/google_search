@@ -18,6 +18,8 @@ class EmailCrawler:
         self.api_key = os.getenv('GOOGLE_API_KEY')
         self.cse_id = os.getenv('GOOGLE_CSE_ID')
         self.found_emails: Dict[str, Set[str]] = {}
+        self.sites_visited = 0
+        self.google_pages_crawled = 0
 
         if not self.api_key or not self.cse_id:
             raise ValueError("Missing API key or Search Engine ID in .env file")
@@ -33,6 +35,7 @@ class EmailCrawler:
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
             response = requests.get(url, headers=headers, timeout=10)
             response.raise_for_status()
+            self.sites_visited += 1
             return response.text
         except Exception as e:
             print(f"Error fetching {url}: {str(e)}")
@@ -83,6 +86,7 @@ class EmailCrawler:
             urls = []
 
             for i in range(num_pages):
+                self.google_pages_crawled += 1
                 start_index = i * 10 + 1
                 result = service.cse().list(
                     q=query,
@@ -117,6 +121,21 @@ class EmailCrawler:
 
         return self.found_emails
 
+    def print_summary(self):
+        """Print summary statistics of the crawl."""
+        total_emails = set()
+        for emails in self.found_emails.values():
+            total_emails.update(emails)
+
+        print("\n=== CRAWL SUMMARY ===")
+        print(f"Google pages crawled: {self.google_pages_crawled}")
+        print(f"Total sites visited: {self.sites_visited}")
+        print(f"Sites with emails found: {len(self.found_emails)}")
+        print(f"Total unique emails found: {len(total_emails)}")
+
+        print("\nAll unique emails:")
+        print(", ".join(sorted(total_emails)))
+
 
 def main():
     try:
@@ -127,9 +146,11 @@ def main():
 
         if results:
             print("\nFound email addresses:")
-            for url, emails in results.items():
-                print(f"\nURL: {url}")
-                print(f"Emails: {', '.join(emails)}")
+            for i, (url, emails) in enumerate(results.items(), 1):
+                print(f"\n{i}. URL: {url}")
+                print(f"   Emails: {', '.join(emails)}")
+
+            crawler.print_summary()
         else:
             print("No email addresses found.")
 
