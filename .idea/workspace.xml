@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15281a4b-548e-456f-9b89-e661d604bccd" name="Changes" comment=".env file removed and example file created" />
+    <list default="true" id="15281a4b-548e-456f-9b89-e661d604bccd" name="Changes" comment="api key changed" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,13 +44,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.email_crawler.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.email_crawler.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/shant/PycharmProjects/google_search"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="email_crawler" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="google_search" />
@@ -160,7 +161,23 @@
       <option name="project" value="LOCAL" />
       <updated>1730493551558</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary=".env added again">
+      <option name="closed" value="true" />
+      <created>1730495928583</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1730495928583</updated>
+    </task>
+    <task id="LOCAL-00010" summary="api key changed">
+      <option name="closed" value="true" />
+      <created>1730496055752</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1730496055752</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -181,6 +198,8 @@
     <MESSAGE value="SI added. working" />
     <MESSAGE value="made it lean" />
     <MESSAGE value=".env file removed and example file created" />
-    <option name="LAST_COMMIT_MESSAGE" value=".env file removed and example file created" />
+    <MESSAGE value=".env added again" />
+    <MESSAGE value="api key changed" />
+    <option name="LAST_COMMIT_MESSAGE" value="api key changed" />
   </component>
 </project>
