@@ -1,17 +1,38 @@
 # Email Crawler
 
-This script searches Google for specific keywords and crawls the results to find email addresses.
+A Python script that crawls websites to find email addresses using Google Custom Search API.
+
+## Features
+
+- Uses Google Custom Search API to find relevant websites
+- Crawls main pages and contact pages
+- Extracts email addresses using regex pattern matching
+- Supports multithreaded crawling
+- Includes detailed logging and debug mode
+- Progress bar for crawling status
+
+## Prerequisites
+
+- Python 3.7+
+- Google API Key
+- Google Custom Search Engine ID
 
 ## Setup
 
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-2. Environment variables are already set up in the `.env` file with your:
-   - Google API Key
-   - Custom Search Engine ID
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Copy `.env.example` to `.env` and add your credentials:
+   ```bash
+   cp .env.example .env
+   ```
+4. Edit `.env` file with your Google API credentials:
+   ```
+   GOOGLE_API_KEY=your_google_api_key_here
+   GOOGLE_CSE_ID=your_custom_search_engine_id_here
+   ```
 
 ## Usage
 
@@ -20,23 +41,21 @@ Run the script:
 python email_crawler.py
 ```
 
-The script will:
-1. Prompt for your search query
-2. Search Google using the Custom Search API
-3. Crawl each result and its contact pages
-4. Extract and deduplicate email addresses
-5. Display results with source URLs
+You will be prompted to:
+1. Enter your search query
+2. Specify number of pages to crawl (default: 2)
+3. Enable/disable debug mode (default: False)
 
-## Features
+## Output
 
-- Parallel crawling for faster results
-- Smart contact page detection
-- Rate limiting to respect website policies
-- Progress bar for crawling status
-- Error handling for invalid URLs and timeouts
-- Email deduplication
-- Source URL tracking
+- Console output shows progress and found email addresses
+- Detailed logs are saved in the `logs` directory
+- Debug information (if enabled) includes:
+  - Pages crawled
+  - Contact pages found
+  - Emails discovered
+  - Any errors encountered
 
-## Note
+## License
 
-Please use responsibly and in accordance with websites' terms of service and robots.txt files.
+MIT License

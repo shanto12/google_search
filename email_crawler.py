@@ -111,17 +111,14 @@ class EmailCrawler:
 
         if emails:
             self.found_emails[url] = emails
-            print(f"Found {len(emails)} emails on {url}")
             logger.info(f"Found {len(emails)} emails on {url}")
             if self.debug_mode:
                 self.debug_info[url].emails_found.update(emails)
 
         contact_pages = self.find_contact_pages(soup, url)
-        print(f"Found {len(contact_pages)} contact pages on {url}")
         logger.info(f"Found {len(contact_pages)} contact pages on {url}")
         if contact_pages:
             for i, contact_url in enumerate(contact_pages, 1):
-                print(f"  {i}. {contact_url}")
                 logger.info(f"  {i}. {contact_url}")
 
         if self.debug_mode:
@@ -137,7 +134,6 @@ class EmailCrawler:
                     contact_emails = self.extract_emails(contact_content)
                     if contact_emails:
                         self.found_emails[contact_url] = contact_emails
-                        print(f"Found {len(contact_emails)} emails on contact page: {contact_url}")
                         logger.info(f"Found {len(contact_emails)} emails on contact page: {contact_url}")
                         if self.debug_mode:
                             self.debug_info[url].emails_found.update(contact_emails)

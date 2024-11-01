@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15281a4b-548e-456f-9b89-e661d604bccd" name="Changes" comment="debug information added. working">
+    <list default="true" id="15281a4b-548e-456f-9b89-e661d604bccd" name="Changes" comment="SI added. working">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/email_crawler.py" beforeDir="false" afterPath="$PROJECT_DIR$/email_crawler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730476829425</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="SI added. working">
+      <option name="closed" value="true" />
+      <created>1730478334350</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1730478334350</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -157,6 +168,7 @@
     <MESSAGE value="working code" />
     <MESSAGE value="code updated and is working" />
     <MESSAGE value="debug information added. working" />
-    <option name="LAST_COMMIT_MESSAGE" value="debug information added. working" />
+    <MESSAGE value="SI added. working" />
+    <option name="LAST_COMMIT_MESSAGE" value="SI added. working" />
   </component>
 </project>
