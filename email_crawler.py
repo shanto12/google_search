@@ -119,6 +119,11 @@ class EmailCrawler:
         contact_pages = self.find_contact_pages(soup, url)
         print(f"Found {len(contact_pages)} contact pages on {url}")
         logger.info(f"Found {len(contact_pages)} contact pages on {url}")
+        if contact_pages:
+            for i, contact_url in enumerate(contact_pages, 1):
+                print(f"  {i}. {contact_url}")
+                logger.info(f"  {i}. {contact_url}")
+
         if self.debug_mode:
             self.debug_info[url].contact_pages_found = contact_pages
 
@@ -199,9 +204,9 @@ class EmailCrawler:
 
             logger.info(f"Contact pages found: {len(info.contact_pages_found)}")
             if info.contact_pages_found:
-                for contact_url in info.contact_pages_found:
+                for i, contact_url in enumerate(info.contact_pages_found, 1):
                     status = info.contact_pages_crawled.get(contact_url, "Not crawled")
-                    logger.info(f"  - {contact_url} (Crawled: {status})")
+                    logger.info(f"  {i}. {contact_url} (Crawled: {status})")
 
             if info.errors:
                 logger.info("Errors encountered:")
